@@ -1,37 +1,24 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
 import {
-  FaGamepad,
-  FaMusic,
-  FaPalette,
-  FaBus,
-  FaAppleAlt,
-  FaGraduationCap,
-  FaMapMarkerAlt,
-  FaEnvelope,
-  FaPhoneAlt,
-  FaTwitter,
-  FaFacebookF,
-  FaLinkedinIn,
-  FaInstagram,
-  FaBaby,
-  FaSchool,
-  FaClock,
-  FaCheckCircle,
-  FaUser,
-  FaLock,
-  FaPaperPlane,
-  FaChild,
-  FaCreditCard,
+  FaGamepad, FaMusic, FaPalette, FaBus, FaAppleAlt, FaGraduationCap,
+  FaMapMarkerAlt, FaEnvelope, FaPhoneAlt, FaTwitter, FaFacebookF,
+  FaLinkedinIn, FaInstagram, FaBaby, FaSchool, FaClock, FaCheckCircle,
+  FaUser, FaLock, FaPaperPlane, FaChild, FaCreditCard,
 } from "react-icons/fa";
-// Added query, where, and getDocs to imports
 import { collection, addDoc, query, where, getDocs } from "firebase/firestore";
 import nurseryImage1 from "./assets/img1.png";
 import nurseryImage2 from "./assets/girl.jpg";
 import nurseryImage3 from "./assets/boy-holding-green-container.jpg";
 import "./App.css";
 import { db } from "./firebase";
-import Administration from "./administation.jsx";
+
+// Components
+import Administration from "./administation";
+import EducatorProfile from "./EducatorProfile";
+import ProfilePage from "./Profile"; 
 // --- Navbar Component ---
+
 const Navbar = ({ user, onLogout }) => {
   const [isActive, setIsActive] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -44,158 +31,25 @@ const Navbar = ({ user, onLogout }) => {
 
   return (
     <nav className={`navBar ${scrolled ? "scrolled" : ""}`}>
-      <a href="#" className="logo">
-        Kid<span>Kinder</span>
-      </a>
+      <a href="#" className="logo">Kid<span>Kinder</span></a>
       <div className={`navLinks ${isActive ? "active" : ""}`}>
         <a href="#home">Home</a>
         <a href="#services">Services</a>
         <a href="#programs">Programs</a>
         {!user ? (
-          <a href="#register" className="nav-cta">
-            Enroll Now
-          </a>
+          <a href="#register" className="nav-cta">Enroll Now</a>
         ) : (
-          <button onClick={onLogout} className="nav-cta logout-nav">
-            Logout
-          </button>
+          <button onClick={onLogout} className="nav-cta logout-nav">Logout</button>
         )}
       </div>
       <div className="hamburger" onClick={() => setIsActive(!isActive)}>
-        <span></span>
-        <span></span>
-        <span></span>
+        <span></span><span></span><span></span>
       </div>
     </nav>
   );
 };
-const ProfilePage = ({ user }) => {
-  const [showPayment, setShowPayment] = useState(false);
 
-  return (
-    <section className="profile-section">
-      <div className="profile-container">
-        {/* Profile Header */}
-        <div className="profile-header">
-          <div className="user-meta">
-            <div className="user-avatar">
-              <FaUser />
-            </div>
-            <div>
-              <h2>Welcome, {user.parentName}</h2>
-              <p>Member since {new Date().getFullYear()}</p>
-            </div>
-          </div>
-          <div className="status-container">
-            <span
-              className={`status-badge ${
-                showPayment ? "processing" : "pending"
-              }`}
-            >
-              ● Account Pending Activation
-            </span>
-          </div>
-        </div>
 
-        <div className="profile-main-grid">
-          {/* Summary Card */}
-          <div className="summary-card">
-            <h3>Enrollment Summary</h3>
-            <div className="summary-item">
-              <span>Child Name:</span> <strong>{user.childName}</strong>
-            </div>
-            <div className="summary-item">
-              <span>Selected Program:</span> <strong>{user.program}</strong>
-            </div>
-
-            {!showPayment && (
-              <button
-                className="activate-trigger-btn"
-                onClick={() => setShowPayment(true)}
-              >
-                Pay to Activate Account
-              </button>
-            )}
-          </div>
-
-          {/* Payment Form */}
-          {showPayment && (
-            <div className="payment-card-modern fade-in">
-              <h3>Secure Checkout</h3>
-              <form
-                className="modern-pay-form"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  alert("Payment Processed!");
-                }}
-              >
-                <div className="pay-input-group">
-                  <label>Card Number</label>
-                  <div className="input-with-icon">
-                    <FaCreditCard />
-                    <input
-                      type="text"
-                      placeholder="xxxx xxxx xxxx xxxx"
-                      required
-                    />
-                  </div>
-                </div>
-                <button type="submit" className="final-pay-btn">
-                  Confirm & Pay
-                </button>
-                <button
-                  type="button"
-                  className="cancel-pay"
-                  onClick={() => setShowPayment(false)}
-                >
-                  Cancel
-                </button>
-              </form>
-            </div>
-          )}
-        </div>
-
-        {/* --- Communication Center --- */}
-        <div className="notice-board-grid fade-in">
-          <div className="notice-card educator-note">
-            <div className="notice-header">
-              <FaGraduationCap className="notice-icon" />
-              <h3>Educator's Notice</h3>
-            </div>
-            <div className="notice-content">
-              <span className="notice-date">Today, 09:15 AM</span>
-              <p>
-                Welcome to the family! Once your account is activated, your
-                child's primary educator will post daily activity reports, nap
-                schedules, and meal updates here.
-              </p>
-              <div className="priority-tag">Information</div>
-            </div>
-          </div>
-
-          <div className="notice-card parent-note">
-            <div className="notice-header">
-              <FaPaperPlane className="notice-icon" />
-              <h3>Parent's Note to Staff</h3>
-            </div>
-            <div className="notice-content">
-              <p className="note-placeholder">
-                Have specific instructions for today (e.g., medicine, early
-                pickup)?
-              </p>
-              <textarea
-                className="parent-textarea"
-                placeholder="Type a message to the teachers..."
-                rows="3"
-              ></textarea>
-              <button className="send-note-btn">Update Teachers</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-};
 
 // --- Header Component ---
 const Header = () => (
@@ -391,23 +245,23 @@ const Gallery = () => {
 const Teachers = () => {
   const teachersData = [
     {
-      name: "Julia Smith",
-      role: "Music Teacher",
-      img: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400",
+      name: "Larbi Youcef",
+      role: "Daycare",
+      img: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400",
     },
     {
-      name: "Jhon Doe",
-      role: "Language Teacher",
-      img: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400",
+      name: "Amine Kerada",
+      role: "Preschool",
+      img: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400",
     },
     {
-      name: "Mollie Ross",
-      role: "Dance Teacher",
-      img: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400",
+      name: "Meddad abelrrehman",
+      role: "Daycare",
+      img: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400",
     },
     {
-      name: "Donald John",
-      role: "Art Teacher",
+      name: "Djilali ilyas",
+      role: "After School",
       img: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400",
     },
   ];
@@ -456,79 +310,75 @@ const Register = ({ onRegisterSuccess }) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    // --- SPECIAL ADMIN OVERRIDE ---
-    // If these credentials are used, take them straight to admin
-    if (
-      isLogin &&
-      formData.email === "admin@kinder.com" &&
-      formData.password === "admin123"
-    ) {
-      onRegisterSuccess({
-        email: "admin@kinder.com",
-        parentName: "Administrator",
-        isAdmin: true,
-      });
-      return;
-    }
+  // 1. ADMIN CHECK
+  if (isLogin && formData.email === "admin@kinder.com" && formData.password === "admin123") {
+    onRegisterSuccess({ email: "admin@kinder.com", parentName: "Administrator", isAdmin: true });
+    return;
+  }
 
-    if (!isLogin) {
-      // REGISTRATION LOGIC
+  try {
+    if (isLogin) {
+      // 2. CHECK EDUCATORS BY EMAIL
+      const eduQ = query(collection(db, "educators"), where("email", "==", formData.email));
+      const eduSnap = await getDocs(eduQ);
+      
+      if (!eduSnap.empty) {
+        const eduData = eduSnap.docs[0].data();
+        if (eduData.password === formData.password) {
+          onRegisterSuccess({ ...eduData, id: eduSnap.docs[0].id, role: "educator" }); 
+          return;
+        }
+      }
+
+      // 3. CHECK REGISTRATIONS (Parents)
+      const parentQ = query(collection(db, "registrations"), where("email", "==", formData.email));
+      const parentSnap = await getDocs(parentQ);
+
+      if (!parentSnap.empty) {
+        const parentData = parentSnap.docs[0].data();
+        if (parentData.password === formData.password) {
+          onRegisterSuccess({ ...parentData, id: parentSnap.docs[0].id, role: "parent" });
+          return;
+        }
+      }
+      alert("Invalid Email or Password");
+    } else {
+      // --- FIXED REGISTRATION LOGIC ---
       if (formData.password !== formData.confirmPassword) {
         alert("Passwords do not match!");
         return;
       }
 
-      try {
-        await addDoc(collection(db, "registrations"), {
-          parentName: formData.parentName,
-          childName: formData.childName,
-          email: formData.email,
-          program: formData.program,
-          password: formData.password,
-          submittedAt: new Date(),
-        });
-        onRegisterSuccess(formData);
-      // eslint-disable-next-line no-unused-vars
-      } catch (error) {
-        alert("Error connecting to database.");
+      if (!formData.program) {
+        alert("Please select a program!");
+        return;
       }
-    } else {
-      // REGULAR LOGIN LOGIC
-      try {
-        const q = query(
-          collection(db, "registrations"),
-          where("email", "==", formData.email)
-        );
 
-        const querySnapshot = await getDocs(q);
+      const newParent = {
+        parentName: formData.parentName,
+        childName: formData.childName,
+        email: formData.email,
+        program: formData.program,
+        password: formData.password,
+        role: 'parent',
+        createdAt: new Date().toISOString()
+      };
 
-        if (querySnapshot.empty) {
-          alert("Email not found. Please register first!");
-          return;
-        }
-
-        let userFound = null;
-        querySnapshot.forEach((doc) => {
-          const data = doc.data();
-          if (data.password === formData.password) {
-            userFound = data;
-          }
-        });
-
-        if (userFound) {
-          onRegisterSuccess(userFound);
-        } else {
-          alert("Wrong password or email.");
-        }
-      // eslint-disable-next-line no-unused-vars
-      } catch (error) {
-        alert("Login failed. Check your connection.");
-      }
+      // Save to Firebase
+      const docRef = await addDoc(collection(db, "registrations"), newParent);
+      
+      // Send to Profile Page immediately
+      onRegisterSuccess({ ...newParent, id: docRef.id });
+      alert("Registration Successful!");
     }
-  };
+  } catch (error) {
+    console.error("Firebase Error:", error);
+    alert("Error connecting to database.");
+  }
+};
 
   return (
     <section className="register-section" id="register">
@@ -739,14 +589,14 @@ const Footer = () => (
             <FaMapMarkerAlt className="c-icon-main" />{" "}
             <div>
               <span>Location</span>
-              <p>123 Education Lane, NY</p>
+              <p>14 , tiaret </p>
             </div>
           </div>
           <div className="c-info">
             <FaPhoneAlt className="c-icon-main" />{" "}
             <div>
               <span>Phone</span>
-              <p>+1 (555) 000-1234</p>
+              <p>+213554093528</p>
             </div>
           </div>
           <div className="c-info">
@@ -780,6 +630,7 @@ const Footer = () => (
   </footer>
 );
 
+
 // --- MAIN APP COMPONENT ---
 export default function App() {
   const [userProfile, setUserProfile] = useState(null);
@@ -792,27 +643,48 @@ export default function App() {
   const handleLogout = () => {
     setUserProfile(null);
   };
-  if (userProfile?.email === "admin@kinder.com") {
-    return <Administration onLogout={() => setUserProfile(null)} />;
-  }
-  return (
-    <div className="App">
-      <Navbar user={userProfile} onLogout={handleLogout} />
 
-      {userProfile ? (
-        <ProfilePage user={userProfile} onLogout={handleLogout} />
-      ) : (
+  // Helper function to render the correct view
+  const renderView = () => {
+    // 1. If not logged in, show Landing Page
+    if (!userProfile) {
+      return (
         <>
+          <Navbar user={null} onLogout={handleLogout} />
           <Header />
           <Service />
           <Programs />
           <Gallery />
           <Teachers />
           <Register onRegisterSuccess={handleRegisterSuccess} />
+          <Footer />
         </>
-      )}
+      );
+    }
 
-      <Footer />
+    // 2. If Admin
+    if (userProfile.isAdmin || userProfile.email === "admin@kinder.com") {
+      return <Administration onLogout={handleLogout} />;
+    }
+
+    // 3. If Educator
+    if (userProfile.role === "educator") {
+      return <EducatorProfile user={userProfile} onLogout={handleLogout} />;
+    }
+
+    // 4. Default: Parent Profile Page
+    return (
+      <>
+        <Navbar user={userProfile} onLogout={handleLogout} />
+        <ProfilePage user={userProfile} onLogout={handleLogout} />
+        <Footer />
+      </>
+    );
+  };
+
+  return (
+    <div className="App">
+      {renderView()}
     </div>
   );
 }

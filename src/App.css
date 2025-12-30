@@ -1035,7 +1035,8 @@ body {
   padding: 20px;
   border-radius: 15px;
   flex: 1;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
+
 }
 
 .stat-card strong { display: block; font-size: 1.8rem; color: var(--dark); }
@@ -1225,4 +1226,214 @@ body {
   border: none;
   cursor: pointer;
   font-size: 18px;
+} 
+/* Educator Dashboard Layout */
+.educator-dashboard {
+  background: #f8f9fa;
+  min-height: 100vh;
 }
+
+.profile-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.profile-header {
+  background: white;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  margin-bottom: 30px;
+}
+
+.user-meta {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.user-avatar {
+  font-size: 3rem;
+  color: #17a2b8;
+  background: #e1f5f7;
+  padding: 15px;
+  border-radius: 50%;
+  display: flex;
+}
+
+/* Main Grid: Attendance on Left, Notice on Right */
+.profile-main-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+}
+
+@media (max-width: 768px) {
+  .profile-main-grid { grid-template-columns: 1fr; }
+}
+
+/* Attendance Card */
+.summary-card, .notice-card {
+  background: white;
+  padding: 25px;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.attendance-list {
+  margin-top: 20px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.attendance-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.attendance-item span {
+  font-weight: 500;
+  color: #2d3436;
+}
+
+/* Present/Absent Pills */
+.pill {
+  padding: 6px 15px;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.pill.paid { /* Using your existing 'paid' class for Present */
+  background: #55efc4;
+  color: #00b894;
+}
+
+.pill.unpaid { /* Using your existing 'unpaid' class for Absent */
+  background: #ffeaa7;
+  color: #d63031;
+}
+
+/* Notice/Broadcast Section */
+.educator-note {
+  display: flex;
+  flex-direction: column;
+}
+
+.notice-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+  color: #eb4d4b;
+}
+
+.parent-textarea {
+  width: 100%;
+  height: 150px;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  resize: none;
+  font-family: inherit;
+  margin-bottom: 15px;
+}
+
+.send-note-btn, .activate-trigger-btn {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.send-note-btn { background: #eb4d4b; color: white; }
+.activate-trigger-btn { background: #17a2b8; color: white; }
+
+.send-note-btn:hover, .activate-trigger-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+} 
+/* Status Badge Colors */
+.status-badge.pending {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.status-badge.activated {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: bold;
+}
+
+/* Expiry info styling */
+.expiry-info {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed #ddd;
+}
+
+/* Button style */
+.final-pay-btn {
+  background: #27ae60;
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.final-pay-btn:hover {
+  background: #219150;
+} 
+.admin-form-row-input{  
+  margin-top: 5px;
+  margin-right: 10px;
+  padding: 9px; 
+  border-radius: 6px; 
+  border: rgb(161, 161, 161);
+} 
+.admin-form-row-option { 
+  
+  margin-top: 5px;
+  margin-right: 10px;
+  padding: 9px; 
+  border-radius: 6px; 
+  border: rgb(161, 161, 161);
+}
+.add-btn{ 
+  background-color:#039be5 ;
+  margin-top: 5px;
+  margin-right: 10px;
+  padding: 9px; 
+  border-radius: 6px; 
+  border: none; 
+  color: white;
+} 
+.admin-logout{ 
+   background-color: #039be5;
+   border: none;
+   color: white;
+   padding: 7px; 
+   border-radius: 7px;
+} 
+.admin-stats-grid{ 
+  display: flex;  
+  gap: 5px;
+} 
