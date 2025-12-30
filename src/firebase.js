@@ -1,15 +1,20 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
+import { getAnalytics } from "firebase/analytics";
+import { getFirestore } from "firebase/firestore"; // Added this to fix your build error
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBIkvAbM1-Z1NQL97tsOF4mQc5BpSwAExQ",
-  authDomain: "nursery-f7a31.firebaseapp.com",
-  projectId: "nursery-f7a31",
-  storageBucket: "nursery-f7a31.firebasestorage.app",
-  messagingSenderId: "202151742348",
-  appId: "1:202151742348:web:23e7fa646c9e194eab24a9",
-  measurementId: "G-7EY3KVNYFR"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
-export const db = getFirestore(app); // This is the connection to your database
+const analytics = getAnalytics(app);
+const db = getFirestore(app); // Export this to use in your App.jsx
+
+export { app, db, analytics };
