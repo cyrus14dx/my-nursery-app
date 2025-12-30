@@ -3,7 +3,6 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://cyrus14dx.github.io/my-nursery-app",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
