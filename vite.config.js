@@ -3,5 +3,5 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
-  base: '/kidkinder/'
+  base: '/my-nursery-app/', // MUST match your repository name exactly
 })
