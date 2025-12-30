@@ -31,7 +31,6 @@ import nurseryImage3 from "./assets/boy-holding-green-container.jpg";
 import "./App.css";
 import { db } from "./firebase";
 import Administration from "./administation.jsx";
-
 // --- Navbar Component ---
 const Navbar = ({ user, onLogout }) => {
   const [isActive, setIsActive] = useState(false);
@@ -70,8 +69,7 @@ const Navbar = ({ user, onLogout }) => {
     </nav>
   );
 };
-
-const ProfilePage = ({ user, onLogout }) => {
+const ProfilePage = ({ user }) => {
   const [showPayment, setShowPayment] = useState(false);
 
   return (
@@ -493,6 +491,7 @@ const Register = ({ onRegisterSuccess }) => {
           submittedAt: new Date(),
         });
         onRegisterSuccess(formData);
+      // eslint-disable-next-line no-unused-vars
       } catch (error) {
         alert("Error connecting to database.");
       }
@@ -524,6 +523,7 @@ const Register = ({ onRegisterSuccess }) => {
         } else {
           alert("Wrong password or email.");
         }
+      // eslint-disable-next-line no-unused-vars
       } catch (error) {
         alert("Login failed. Check your connection.");
       }
