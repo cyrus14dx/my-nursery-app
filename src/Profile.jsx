@@ -2,95 +2,130 @@ import React, { useState, useEffect } from "react";
 import {
   FaUser,
   FaCreditCard,
-  FaGraduationCap,
-  FaPaperPlane,
   FaCheckCircle,
+  FaBullhorn,
+  FaExclamationTriangle,
 } from "react-icons/fa";
+import { collection, query, where, onSnapshot } from "firebase/firestore"; // Changed to onSnapshot
+import { db } from "./firebase";
 
 const ProfilePage = ({ user }) => {
   const [showPayment, setShowPayment] = useState(false);
   const [isActivated, setIsActivated] = useState(false);
-  const [expiryDate, setExpiryDate] = useState("");
+  const [expiryDate, setExpiryDate] = useState(null);
+  const [notices, setNotices] = useState([]);
 
+  // 1. REAL-TIME FETCH: Private and Broadcast Notices
+  useEffect(() => {
+    if (!user.id || !user.program) return;
+
+    // We listen to all notices in the program
+    const q = query(
+      collection(db, "notices"),
+      where("program", "==", user.program)
+    );
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const allNotices = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+
+      // Filter locally: Show if it's a broadcast OR if it's private to THIS user.id
+      const myFilteredNotices = allNotices
+        .filter(n => n.type === "broadcast" || n.recipientId === user.id)
+        .sort((a, b) => new Date(b.date) - new Date(a.date)); // Newest first
+
+      setNotices(myFilteredNotices);
+    });
+
+    return () => unsubscribe(); // Cleanup listener on unmount
+  }, [user.program, user.id]);
+
+  // 2. SUBSCRIPTION CHECK: Runs on load
+  useEffect(() => {
+    const savedExpiry = localStorage.getItem(`expiry_${user.id}`);
+    if (savedExpiry) {
+      const expiry = new Date(savedExpiry);
+      const now = new Date();
+
+      if (now < expiry) {
+        setIsActivated(true);
+        setExpiryDate(expiry.toLocaleDateString());
+      } else {
+        setIsActivated(false);
+        setExpiryDate(null);
+        localStorage.removeItem(`expiry_${user.id}`); // Clear expired data
+      }
+    }
+  }, [user.id]);
+
+  // 3. PAYMENT HANDLER: Sets 30-day access
   const handlePayment = (e) => {
     e.preventDefault();
     
-    // 1. Set Activation State
-    setIsActivated(true);
-    setShowPayment(false);
-
-    // 2. Calculate Expiry Date (Current date + 1 Month)
     const today = new Date();
-    const nextMonth = new Date(today.setMonth(today.getMonth() + 1));
+    const nextMonth = new Date();
+    nextMonth.setDate(today.getDate() + 30); // 30 days from now
+
+    const expiryString = nextMonth.toISOString();
+
+    setIsActivated(true);
+    setExpiryDate(nextMonth.toLocaleDateString());
     
-    // Format date to: Month Day, Year (e.g., Jan 30, 2026)
-    const formattedDate = nextMonth.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
+    // Save to localStorage for persistence
+    localStorage.setItem(`expiry_${user.id}`, expiryString);
     
-    setExpiryDate(formattedDate);
-    alert("Payment Successful! Your account is now active.");
+    setShowPayment(false);
+    alert("Payment Successful! Your 30-day subscription is active.");
   };
 
   return (
     <section className="profile-section">
       <div className="profile-container">
-        {/* Profile Header */}
+        {/* Header Section */}
         <div className="profile-header">
           <div className="user-meta">
-            <div className="user-avatar">
-              <FaUser />
-            </div>
+            <div className="user-avatar"><FaUser /></div>
             <div>
               <h2>Welcome, {user.parentName}</h2>
-              <p>Member since {new Date().getFullYear()}</p>
+              <p>Child: <strong>{user.childName}</strong></p>
             </div>
           </div>
           
           <div className="status-container">
             {isActivated ? (
               <span className="status-badge activated">
-                <FaCheckCircle /> Account Activated
+                <FaCheckCircle /> Subscription Active
               </span>
             ) : (
-              <span className={`status-badge ${showPayment ? "processing" : "pending"}`}>
-                ● Account Pending Activation
+              <span className="status-badge pending">
+                <FaExclamationTriangle /> Subscription Expired
               </span>
             )}
           </div>
         </div>
 
         <div className="profile-main-grid">
-          {/* Summary Card */}
+          {/* Billing Info */}
           <div className="summary-card">
-            <h3>Enrollment Summary</h3>
+            <h3>Enrollment & Billing</h3>
             <div className="summary-item">
-              <span>Child Name:</span> <strong>{user.childName}</strong>
-            </div>
-            <div className="summary-item">
-              <span>Selected Program:</span> <strong>{user.program}</strong>
+              <span>Program:</span> <strong>{user.program?.toUpperCase()}</strong>
             </div>
             
-            {/* Show Expiry Date if Activated */}
-            {isActivated && (
+            {isActivated ? (
               <div className="summary-item expiry-info">
-                <span>Valid Until:</span> <strong style={{color: '#27ae60'}}>{expiryDate}</strong>
+                <span>Next Billing Date:</span> <strong style={{color: '#27ae60'}}>{expiryDate}</strong>
               </div>
-            )}
-
-            {!isActivated && !showPayment && (
-              <button
-                className="activate-trigger-btn"
-                onClick={() => setShowPayment(true)}
-              >
-                Pay to Activate Account
-              </button>
+            ) : (
+              <div className="renewal-notice">
+                <p>Access expired. Please renew to view teacher messages.</p>
+                <button className="activate-trigger-btn" onClick={() => setShowPayment(true)}>
+                  Renew Subscription ($299.00)
+                </button>
+              </div>
             )}
           </div>
 
-          {/* Payment Form */}
+          {/* Payment UI */}
           {showPayment && (
             <div className="payment-card-modern fade-in">
               <h3>Secure Checkout</h3>
@@ -102,24 +137,46 @@ const ProfilePage = ({ user }) => {
                     <input type="text" placeholder="xxxx xxxx xxxx xxxx" required />
                   </div>
                 </div>
-                <button type="submit" className="final-pay-btn">
-                  Confirm & Pay $299.00
-                </button>
-                <button
-                  type="button"
-                  className="cancel-pay"
-                  onClick={() => setShowPayment(false)}
-                >
-                  Cancel
-                </button>
+                <button type="submit" className="final-pay-btn">Confirm Payment</button>
+                <button type="button" className="cancel-pay" onClick={() => setShowPayment(false)}>Cancel</button>
               </form>
             </div>
           )}
         </div>
 
         {/* --- Communication Center --- */}
-        <div className="notice-board-grid fade-in">
-             {/* ... (rest of your notice board code) ... */}
+        <div className="notice-board-grid fade-in" style={{ marginTop: '30px' }}>
+          <div className="admin-card">
+            <h3><FaBullhorn /> Educator Updates</h3>
+            <div className="notices-container" style={{ maxHeight: '400px', overflowY: 'auto', padding: '10px' }}>
+              {isActivated ? (
+                notices.length > 0 ? (
+                  notices.map((n) => (
+                    <div key={n.id} className={`notice-item ${n.type === 'private' ? 'private-msg' : ''}`} 
+                         style={{ borderLeft: n.type === 'private' ? '5px solid #f1c40f' : '5px solid #3498db', marginBottom: '10px', padding: '15px', background: '#f9f9f9', borderRadius: '8px'}}>
+                      <div className="notice-meta" style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: '#666' }}>
+                        <span><strong>Teacher {n.sender}</strong></span>
+                        <span>{new Date(n.date).toLocaleDateString()}</span>
+                      </div>
+                      <p className="notice-text" style={{ margin: '10px 0' }}>{n.text}</p>
+                      {n.type === 'private' && (
+                        <span style={{ fontSize: '0.7rem', background: '#f1c40f', padding: '2px 8px', borderRadius: '4px', fontWeight: 'bold' }}>
+                          PRIVATE MESSAGE
+                        </span>
+                      )}
+                    </div>
+                  ))
+                ) : (
+                  <p className="empty-msg">No notices for your program yet.</p>
+                )
+              ) : (
+                <div className="locked-content" style={{ textAlign: 'center', padding: '40px', color: '#999' }}>
+                  <FaExclamationTriangle size={30} />
+                  <p>Please renew your subscription to view educator messages.</p>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </section>
