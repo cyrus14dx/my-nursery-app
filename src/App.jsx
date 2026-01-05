@@ -55,12 +55,12 @@ const Navbar = ({ user, onLogout }) => {
 const Header = () => (
   <header className="nursery-header" id="home">
     <div className="header-content">
-      <span className="badge">Welcome to Kinder</span>
+      <span className="badge">Welcome to kidKinder</span>
       <h1>
         Where Tiny Steps Lead to <span className="highlight">Big Dreams</span>
       </h1>
       <p className="intro-text">
-        At <strong>Kinder</strong>, we believe every child deserves a magical
+        At <strong>kidKinder</strong>, we believe every child deserves a magical
         start. Our nursery provides a nurturing environment where safety meets
         fun.
       </p>
@@ -74,19 +74,19 @@ const Header = () => (
 // --- Services Component ---
 const Service = () => {
   const servicesData = [
-    { title: "Play Ground", icon: <FaGamepad />, color: "#FF7675" },
-    { title: "Music & Dance", icon: <FaMusic />, color: "#74B9FF" },
-    { title: "Arts & Crafts", icon: <FaPalette />, color: "#55E6C1" },
-    { title: "Safe Transport", icon: <FaBus />, color: "#FAD390" },
-    { title: "Healthy Food", icon: <FaAppleAlt />, color: "#58B19F" },
-    { title: "Education", icon: <FaGraduationCap />, color: "#A29BFE" },
+    { title: "Play Ground", icon: <FaGamepad />, color: "#FF7675" ,description:"A safe and fun outdoor space where children play, explore, and develop their physical skills through guided activities." },
+    { title: "Music & Dance", icon: <FaMusic />, color: "#74B9FF", description:"Fun music and movement sessions that help children express themselves, build confidence, and improve coordination." },
+    { title: "Arts & Crafts", icon: <FaPalette />, color: "#55E6C1", description:"Creative activities that encourage imagination, fine motor skills, and self-expression through drawing, painting, and crafting." },
+    { title: "Safe Transport", icon: <FaBus />, color: "#FAD390", description:"Reliable and secure transportation to ensure children travel safely between home and the nursery with trained staff supervision." },
+    { title: "Healthy Food", icon: <FaAppleAlt />, color: "#58B19F", description:"Nutritious, balanced meals prepared to support children’s growth, energy, and overall well-being." },
+    { title: "Education", icon: <FaGraduationCap />, color: "#A29BFE", description:"Age-appropriate learning programs that support early literacy, numeracy, and social development in a caring environment." },
   ];
 
   return (
     <section className="services-section" id="services">
       <div className="section-title">
         <h2>
-          Why Choose <span>Us?</span>
+          What We <span>Offer?</span>
         </h2>
       </div>
       <div className="services-container">
@@ -98,8 +98,7 @@ const Service = () => {
             <div className="service-info">
               <h3>{item.title}</h3>
               <p>
-                Holistic development through play-based learning and expert
-                care.
+                {item.description}
               </p>
             </div>
           </div>
@@ -255,12 +254,12 @@ const Teachers = () => {
       img: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400",
     },
     {
-      name: "Meddad abelrrehman",
+      name: "Meddad Abderrahmane",
       role: "Daycare",
       img: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400",
     },
     {
-      name: "Djilali ilyas",
+      name: "Ilyas Djilali",
       role: "After School",
       img: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400",
     },
@@ -270,7 +269,7 @@ const Teachers = () => {
     <section className="teachers-section" id="teachers">
       <div className="section-title">
         <h2>
-          Meet <span>Our Teachers</span>
+          Meet Our<span> Teachers</span>
         </h2>
       </div>
       <div className="teachers-grid">
@@ -388,7 +387,7 @@ const handleSubmit = async (e) => {
             {isLogin ? "Member Area" : "Enrollment 2025"}
           </span>
           <h2>
-            {isLogin ? "Access Your" : "Enroll Your"} <span>Child</span>
+            {isLogin ? "Access Your Account" : "Enroll Your Child"} 
           </h2>
           <p className="description">
             {isLogin

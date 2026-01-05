@@ -169,8 +169,8 @@ const ProfilePage = ({ user }) => {
       </form>
       
       <div className="trust-badges">
-        <span>🔒 SSL Encrypted</span>
-        <span>💳 Secured by Stripe</span>
+        <span> SSL Encrypted</span>
+        <span> Secured by Stripe</span>
       </div>
     </div>
   </div>
