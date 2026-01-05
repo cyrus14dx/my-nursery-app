@@ -124,7 +124,7 @@ const ProfilePage = ({ user }) => {
                 <p style={{ color: '#27ae60' }}><strong>Access Valid Until:</strong> {expiryDate}</p>
                 <button 
                   onClick={handlePrintReceipt}
-                  style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 15px', background: '#f8f9fa', border: '1px solid #ddd', borderRadius: '5px', cursor: 'pointer', fontWeight: 'bold' }}
+                  style={{ margin:'5px',display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 15px', background: '#f8f9fa', border: '1px solid #ddd', borderRadius: '5px', cursor: 'pointer', fontWeight: 'bold' }}
                 >
                   <FaPrint /> Print Last Receipt
                 </button>
