@@ -98,12 +98,12 @@ const Header = () => (
 // --- Services Component ---
 const Service = () => {
   const servicesData = [
-    { title: "Play Ground", icon: <FaGamepad />, color: "#FF7675" },
-    { title: "Music & Dance", icon: <FaMusic />, color: "#74B9FF" },
-    { title: "Arts & Crafts", icon: <FaPalette />, color: "#55E6C1" },
-    { title: "Safe Transport", icon: <FaBus />, color: "#FAD390" },
-    { title: "Healthy Food", icon: <FaAppleAlt />, color: "#58B19F" },
-    { title: "Education", icon: <FaGraduationCap />, color: "#A29BFE" },
+    { title: "Play Ground", icon: <FaGamepad />, color: "#FF7675", description:"A safe and fun outdoor space where children play, explore, and develop their physical skills through guided activities." },
+    { title: "Music & Dance", icon: <FaMusic />, color: "#74B9FF", description:"Fun music and movement sessions that help children express themselves, build confidence, and improve coordination." },
+    { title: "Arts & Crafts", icon: <FaPalette />, color: "#55E6C1",description:"Creative activities that encourage imagination, fine motor skills, and self-expression through drawing, painting, and crafting." },
+    { title: "Safe Transport", icon: <FaBus />, color: "#FAD390", description:"Reliable and secure transportation to ensure children travel safely between home and the nursery with trained staff supervision." },
+    { title: "Healthy Food", icon: <FaAppleAlt />, color: "#58B19F", description:"Nutritious, balanced meals prepared to support children’s growth, energy, and overall well-being." },
+    { title: "Education", icon: <FaGraduationCap />, color: "#A29BFE", description:"Age-appropriate learning programs that support early literacy, numeracy, and social development in a caring environment." },
   ];
 
   return (
@@ -122,8 +122,7 @@ const Service = () => {
             <div className="service-info">
               <h3>{item.title}</h3>
               <p>
-                Holistic development through play-based learning and expert
-                care.
+                {item.description}
               </p>
             </div>
           </div>
