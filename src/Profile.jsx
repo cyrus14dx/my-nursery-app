@@ -138,22 +138,127 @@ const ProfilePage = ({ user }) => {
 
           {/* Payment Form */}
           {showPayment && (
-            <div className="payment-card-modern" style={{ padding: '20px', border: '2px solid #3498db', borderRadius: '12px', background: '#f4faff' }}>
-              <h3>Secure Payment</h3>
-              <form onSubmit={handlePayment}>
-                <div style={{ marginBottom: '15px' }}>
-                  <label style={{ display: 'block', fontSize: '0.8rem' }}>Card Details</label>
-                  <div style={{ position: 'relative' }}>
-                    <FaCreditCard style={{ position: 'absolute', left: '10px', top: '12px', color: '#999' }} />
-                    <input type="text" placeholder="4242 4242 4242 4242" required style={{ width: '100%', padding: '10px 10px 10px 35px', borderRadius: '5px', border: '1px solid #ccc' }} />
-                  </div>
-                </div>
-                <button type="submit" style={{ width: '100%', padding: '12px', background: '#27ae60', color: '#fff', border: 'none', borderRadius: '5px', fontWeight: 'bold', cursor: 'pointer' }}>
-                  Pay Now
-                </button>
-                <button type="button" onClick={() => setShowPayment(false)} style={{ width: '100%', marginTop: '10px', background: 'transparent', border: 'none', color: '#e74c3c', cursor: 'pointer' }}>Cancel</button>
-              </form>
-            </div>
+           <div className="payment-card-modern fade-in" style={{ 
+  padding: '35px', 
+  border: 'none', 
+  borderRadius: '24px', 
+  background: '#ffffff',
+  boxShadow: '0 20px 50px rgba(0,0,0,0.1)',
+  maxWidth: '450px',
+  margin: '0 auto'
+}}>
+  <div style={{ textAlign: 'center', marginBottom: '25px' }}>
+    <h3 style={{ margin: '0 0 10px 0', color: '#00394f', fontSize: '1.5rem' }}>Secure Checkout</h3>
+    <p style={{ margin: 0, fontSize: '0.9rem', color: '#666' }}>Transaction is encrypted and secure</p>
+  </div>
+
+  {/* Visual Card Preview */}
+  <div style={{
+    background: 'linear-gradient(135deg, #3498db 0%, #217dbb 100%)',
+    padding: '20px',
+    borderRadius: '15px',
+    color: 'white',
+    marginBottom: '30px',
+    boxShadow: '0 10px 20px rgba(52, 152, 219, 0.3)',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    height: '160px'
+  }}>
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+      <FaCreditCard size={30} />
+      <span style={{ fontSize: '0.8rem', opacity: 0.8, fontWeight: 'bold' }}>CREDIT / DEBIT</span>
+    </div>
+    <div style={{ fontSize: '1.2rem', letterSpacing: '4px', textAlign: 'center' }}>
+      ••••  ••••  ••••  4242
+    </div>
+    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem' }}>
+      <div>
+        <span style={{ display: 'block', opacity: 0.7 }}>CARD HOLDER</span>
+        <span style={{ fontSize: '0.9rem', textTransform: 'uppercase' }}>{user.parentName}</span>
+      </div>
+      <div style={{ textAlign: 'right' }}>
+        <span style={{ display: 'block', opacity: 0.7 }}>EXPIRES</span>
+        <span style={{ fontSize: '0.9rem' }}>MM/YY</span>
+      </div>
+    </div>
+  </div>
+
+  <form className="modern-pay-form" onSubmit={handlePayment} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+    
+    {/* Card Number */}
+    <div className="pay-input-group">
+      <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.85rem', fontWeight: '600', color: '#444' }}>Card Number</label>
+      <div className="input-with-icon" style={{ position: 'relative' }}>
+        <FaCreditCard style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)', color: '#3498db' }} />
+        <input 
+          type="text" 
+          placeholder="4242 4242 4242 4242" 
+          required 
+          style={{ width: '100%', padding: '14px 14px 14px 45px', borderRadius: '12px', border: '2px solid #edf2f7', fontSize: '1rem', outline: 'none', transition: '0.3s' }} 
+        />
+      </div>
+    </div>
+
+    {/* Expiry and CVV Row */}
+    <div className="pay-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+      <div>
+        <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.85rem', fontWeight: '600', color: '#444' }}>Expiry Date</label>
+        <input 
+          type="text" 
+          placeholder="MM / YY" 
+          required 
+          style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '2px solid #edf2f7', fontSize: '1rem', outline: 'none' }} 
+        />
+      </div>
+      <div>
+        <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.85rem', fontWeight: '600', color: '#444' }}>CVV</label>
+        <input 
+          type="text" 
+          placeholder="123" 
+          required 
+          style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '2px solid #edf2f7', fontSize: '1rem', outline: 'none' }} 
+        />
+      </div>
+    </div>
+
+    <div style={{ marginTop: '10px' }}>
+      <button type="submit" className="final-pay-btn" style={{ 
+        width: '100%', 
+        padding: '16px', 
+        background: '#27ae60', 
+        color: '#fff', 
+        border: 'none', 
+        borderRadius: '14px', 
+        fontWeight: '700', 
+        fontSize: '1.1rem',
+        cursor: 'pointer',
+        boxShadow: '0 10px 20px rgba(39, 174, 96, 0.2)',
+        transition: '0.3s'
+      }}>
+        Pay $299.00 Now
+      </button>
+      
+      <button 
+        type="button" 
+        className="cancel-pay" 
+        onClick={() => setShowPayment(false)} 
+        style={{ 
+          width: '100%', 
+          marginTop: '15px', 
+          background: 'transparent', 
+          border: 'none', 
+          color: '#e74c3c', 
+          fontWeight: '600',
+          cursor: 'pointer',
+          fontSize: '0.9rem'
+        }}
+      >
+        Cancel Transaction
+      </button>
+    </div>
+  </form>
+</div>
           )}
         </div>
 
