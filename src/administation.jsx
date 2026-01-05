@@ -1,41 +1,68 @@
 import React, { useState, useEffect } from "react";
 import {
-  FaUsers, FaChild, FaMoneyBillWave, FaChalkboardTeacher,
-  FaSignOutAlt, FaUserShield, FaTrash, FaPlus, FaChartLine,
-  FaCalendarCheck, FaExclamationTriangle
+  FaUsers,
+  FaChild,
+  FaMoneyBillWave,
+  FaChalkboardTeacher,
+  FaSignOutAlt,
+  FaUserShield,
+  FaTrash,
+  FaPlus,
+  FaChartLine,
+  FaCalendarTimes, // Added icon for Absence
 } from "react-icons/fa";
-import { collection, getDocs, deleteDoc, doc, addDoc, query, orderBy } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  deleteDoc,
+  doc,
+  addDoc,
+} from "firebase/firestore";
 import { db } from "./firebase";
 
 const Administration = ({ onLogout }) => {
   const [activeTab, setActiveTab] = useState("overview");
   const [students, setStudents] = useState([]);
   const [educators, setEducators] = useState([]);
-  const [attendanceLogs, setAttendanceLogs] = useState([]);
+  const [absences, setAbsences] = useState([]); // 1. Added State
   const [loading, setLoading] = useState(true);
 
-  const [newEdu, setNewEdu] = useState({ name: "", email: "", program: "infant" });
+  // Form State for new Educator
+  const [newEdu, setNewEdu] = useState({
+    name: "",
+    email: "",
+    program: "infant",
+  });
 
   useEffect(() => {
     fetchData();
-    if (activeTab === "attendance") fetchAttendance();
-  }, [activeTab]);
+  }, []);
 
   const fetchData = async () => {
     setLoading(true);
     try {
+      // Fetch Students
       const studentSnap = await getDocs(collection(db, "registrations"));
-      setStudents(studentSnap.docs.map((d) => ({ id: d.id, ...d.data() })));
-      const eduSnap = await getDocs(collection(db, "educators"));
-      setEducators(eduSnap.docs.map((d) => ({ id: d.id, ...d.data() })));
-    } catch (err) { console.error(err); }
-    setLoading(false);
-  };
+      const studentList = studentSnap.docs.map((d) => ({ id: d.id, ...d.data() }));
+      setStudents(studentList);
 
-  const fetchAttendance = async () => {
-    const q = query(collection(db, "attendance"), orderBy("timestamp", "desc"));
-    const snap = await getDocs(q);
-    setAttendanceLogs(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+      // Fetch Educators
+      const eduSnap = await getDocs(collection(db, "educators"));
+      const eduList = eduSnap.docs.map((d) => ({ id: d.id, ...d.data() }));
+      setEducators(eduList);
+
+      // 2. Fetch Absences
+      const absenceSnap = await getDocs(collection(db, "absences"));
+      const absenceList = absenceSnap.docs.map((d) => ({
+        id: d.id,
+        ...d.data(),
+      }));
+      setAbsences(absenceList);
+
+    } catch (err) {
+      console.error("Error fetching admin data:", err);
+    }
+    setLoading(false);
   };
 
   const calculateTotalRevenue = () => {
@@ -46,57 +73,103 @@ const Administration = ({ onLogout }) => {
   const handleAddEducator = async (e) => {
     e.preventDefault();
     const generatedPassword = Math.random().toString(36).slice(-8);
-    await addDoc(collection(db, "educators"), {
-      ...newEdu, password: generatedPassword, role: "educator", createdAt: new Date()
-    });
-    alert(`Educator Added! Password: ${generatedPassword}`);
-    setNewEdu({ name: "", email: "", program: "infant" });
-    fetchData();
+    try {
+      await addDoc(collection(db, "educators"), {
+        ...newEdu,
+        password: generatedPassword,
+        role: "educator",
+        createdAt: new Date(),
+      });
+      alert(`Educator Added!\nEmail: ${newEdu.email}\nPassword: ${generatedPassword}`);
+      setNewEdu({ name: "", email: "", program: "infant" });
+      fetchData();
+    } catch (err) {
+      alert("Error adding educator");
+    }
   };
 
   const handleDelete = async (coll, id) => {
-    if (window.confirm("Delete this record?")) {
+    if (window.confirm("Are you sure you want to delete this record?")) {
       await deleteDoc(doc(db, coll, id));
-      activeTab === "attendance" ? fetchAttendance() : fetchData();
+      fetchData();
     }
   };
 
   return (
     <div className="admin-layout">
       <aside className="admin-sidebar">
-        <div className="admin-logo"><FaUserShield /> <span>KINDER<span>ADMIN</span></span></div>
+        <div className="admin-logo">
+          <FaUserShield /> <span>KINDER<span>ADMIN</span></span>
+        </div>
         <nav className="admin-nav">
-          <button className={activeTab === "overview" ? "active" : ""} onClick={() => setActiveTab("overview")}><FaChartLine /> Dashboard</button>
-          <button className={activeTab === "students" ? "active" : ""} onClick={() => setActiveTab("students")}><FaChild /> Students</button>
-          <button className={activeTab === "educators" ? "active" : ""} onClick={() => setActiveTab("educators")}><FaChalkboardTeacher /> Educators</button>
-          <button className={activeTab === "attendance" ? "active" : ""} onClick={() => setActiveTab("attendance")}><FaCalendarCheck /> Attendance</button>
+          <button className={activeTab === "overview" ? "active" : ""} onClick={() => setActiveTab("overview")}>
+            <FaChartLine /> Dashboard
+          </button>
+          <button className={activeTab === "students" ? "active" : ""} onClick={() => setActiveTab("students")}>
+            <FaChild /> Students
+          </button>
+          <button className={activeTab === "educators" ? "active" : ""} onClick={() => setActiveTab("educators")}>
+            <FaChalkboardTeacher /> Educators
+          </button>
+          
+          {/* 3. Added Absence Menu Button */}
+          <button className={activeTab === "absence" ? "active" : ""} onClick={() => setActiveTab("absence")}>
+            <FaCalendarTimes /> Absence
+          </button>
         </nav>
-        <button className="admin-logout" onClick={onLogout} style={{marginTop: 'auto'}}><FaSignOutAlt /> Logout</button>
+        <button className="admin-logout" onClick={onLogout}>
+          <FaSignOutAlt /> Logout
+        </button>
       </aside>
 
       <main className="admin-main">
-        <header className="admin-header"><h1>{activeTab.toUpperCase()}</h1></header>
+        <header className="admin-header">
+          <h1>{activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} Management</h1>
+        </header>
 
+        {/* --- OVERVIEW TAB --- */}
         {activeTab === "overview" && (
           <div className="admin-stats-grid fade-in">
-            <div className="stat-card"><div className="card-icon blue"><FaUsers /></div><div><h3>{students.length}</h3><p>Students</p></div></div>
-            <div className="stat-card"><div className="card-icon green"><FaChalkboardTeacher /></div><div><h3>{educators.length}</h3><p>Educators</p></div></div>
-            <div className="stat-card"><div className="card-icon red"><FaMoneyBillWave /></div><div><h3>${calculateTotalRevenue()}</h3><p>Revenue</p></div></div>
+            <div className="stat-card">
+              <FaUsers className="stat-icon blue" />
+              <div><h3>{students.length}</h3><p>Total Students</p></div>
+            </div>
+            <div className="stat-card">
+              <FaChalkboardTeacher className="stat-icon green" />
+              <div><h3>{educators.length}</h3><p>Active Educators</p></div>
+            </div>
+            <div className="stat-card">
+              <FaMoneyBillWave className="stat-icon gold" />
+              <div><h3>${calculateTotalRevenue()}</h3><p>Monthly Revenue</p></div>
+            </div>
           </div>
         )}
 
-        {activeTab === "attendance" && (
-          <div className="admin-table-container fade-in">
+        {/* --- STUDENTS TAB --- */}
+        {activeTab === "students" && (
+           <div className="table-container fade-in">
             <table className="modern-table">
-              <thead><tr><th>Date</th><th>Student</th><th>Status</th><th>Report</th><th>Action</th></tr></thead>
+              <thead>
+                <tr>
+                  <th>Parent Name</th>
+                  <th>Child Name</th>
+                  <th>Program</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
               <tbody>
-                {attendanceLogs.map((log) => (
-                  <tr key={log.id} style={log.reported ? { background: '#fff5f5', borderLeft: '5px solid #eb4d4b' } : {}}>
-                    <td>{log.date}</td>
-                    <td><strong>{log.childName}</strong><br/><small>{log.parentName}</small></td>
-                    <td><span className={`pill ${log.status === 'Present' ? 'paid' : 'unpaid'}`}>{log.status}</span></td>
-                    <td>{log.reported ? <span style={{color: '#eb4d4b'}}><FaExclamationTriangle/> {log.reportReason}</span> : "-"}</td>
-                    <td><button onClick={() => handleDelete("attendance", log.id)} className="delete-btn"><FaTrash /></button></td>
+                {students.map((s) => (
+                  <tr key={s.id}>
+                    <td>{s.parentName}</td>
+                    <td>{s.childName}</td>
+                    <td><span className={`tag-${s.program}`}>{s.program}</span></td>
+                    <td><span className="status-pill">Active</span></td>
+                    <td>
+                      <button onClick={() => handleDelete("registrations", s.id)} className="delete-btn">
+                        <FaTrash />
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -104,40 +177,84 @@ const Administration = ({ onLogout }) => {
           </div>
         )}
 
-        {activeTab === "students" && (
-          <div className="admin-table-container fade-in">
-            <table className="modern-table">
-              <thead><tr><th>Parent</th><th>Child</th><th>Program</th><th>Action</th></tr></thead>
-              <tbody>
-                {students.map(s => (
-                  <tr key={s.id}><td>{s.parentName}</td><td>{s.childName}</td><td><span className="pill paid">{s.program}</span></td>
-                  <td><button onClick={() => handleDelete("registrations", s.id)} className="delete-btn"><FaTrash /></button></td></tr>
-                ))}
-              </tbody>
-            </table>
+        {/* --- EDUCATORS TAB --- */}
+        {activeTab === "educators" && (
+          <div className="educator-management fade-in">
+            {/* ... Form code stays the same ... */}
+            <div className="admin-card">
+               <h3><FaPlus /> Add New Educator</h3>
+               <form onSubmit={handleAddEducator} className="admin-form-row">
+                 <input type="text" placeholder="Full Name" value={newEdu.name} onChange={(e) => setNewEdu({ ...newEdu, name: e.target.value })} required className="admin-form-row-input" />
+                 <input type="email" placeholder="Educator Email" value={newEdu.email} onChange={(e) => setNewEdu({ ...newEdu, email: e.target.value })} required className="admin-form-row-input" />
+                 <select value={newEdu.program} onChange={(e) => setNewEdu({ ...newEdu, program: e.target.value })} className="admin-form-row-option">
+                   <option value="infant">Infant Daycare</option>
+                   <option value="preschool">Preschool Academy</option>
+                   <option value="afterschool">After School</option>
+                 </select>
+                 <button type="submit" className="add-btn">Create Account</button>
+               </form>
+            </div>
+            <div className="table-container" style={{ marginTop: "20px" }}>
+              <table className="modern-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Program</th>
+                    <th>Password</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {educators.map(edu => (
+                    <tr key={edu.id}>
+                      <td>{edu.name}</td>
+                      <td>{edu.email}</td>
+                      <td><span className="tag-program">{edu.program}</span></td>
+                      <td><code>{edu.password}</code></td>
+                      <td><button onClick={() => handleDelete('educators', edu.id)} className="delete-btn"><FaTrash /></button></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
 
-        {activeTab === "educators" && (
-          <div className="educator-management fade-in">
-            <div className="summary-card" style={{marginBottom: '20px'}}>
-              <h3><FaPlus /> Add Educator</h3>
-              <form onSubmit={handleAddEducator}>
-                <input className="admin-form-row-input" type="text" placeholder="Name" value={newEdu.name} onChange={e => setNewEdu({...newEdu, name: e.target.value})} required />
-                <input className="admin-form-row-input" type="email" placeholder="Email" value={newEdu.email} onChange={e => setNewEdu({...newEdu, email: e.target.value})} required />
-                <select className="admin-form-row-option" value={newEdu.program} onChange={e => setNewEdu({...newEdu, program: e.target.value})}>
-                  <option value="infant">Infant</option><option value="preschool">Preschool</option><option value="afterschool">Afterschool</option>
-                </select>
-                <button type="submit" className="add-btn">Add</button>
-              </form>
-            </div>
+        {/* --- 4. ABSENCE TAB --- */}
+        {activeTab === "absence" && (
+          <div className="table-container fade-in">
             <table className="modern-table">
-              <thead><tr><th>Name</th><th>Email</th><th>Program</th><th>Pass</th><th>Action</th></tr></thead>
+              <thead>
+                <tr>
+                  <th>Student Name</th>
+                  <th>Date of Absence</th>
+                  <th>Reason</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
               <tbody>
-                {educators.map(edu => (
-                  <tr key={edu.id}><td>{edu.name}</td><td>{edu.email}</td><td>{edu.program}</td><td><code>{edu.password}</code></td>
-                  <td><button onClick={() => handleDelete('educators', edu.id)} className="delete-btn"><FaTrash /></button></td></tr>
-                ))}
+                {absences.length > 0 ? (
+                  absences.map((abs) => (
+                    <tr key={abs.id}>
+                      <td><strong>{abs.studentName}</strong></td>
+                      <td>{abs.date}</td>
+                      <td>{abs.reason || "Not specified"}</td>
+                      <td>
+                        <button 
+                          onClick={() => handleDelete("absences", abs.id)} 
+                          className="delete-btn"
+                        >
+                          <FaTrash />
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="4" style={{ textAlign: 'center', padding: '20px' }}>No absence records found.</td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
@@ -146,4 +263,5 @@ const Administration = ({ onLogout }) => {
     </div>
   );
 };
+
 export default Administration;

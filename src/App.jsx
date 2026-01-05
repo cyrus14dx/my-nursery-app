@@ -1,28 +1,10 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
 import {
-  FaGamepad,
-  FaMusic,
-  FaPalette,
-  FaBus,
-  FaAppleAlt,
-  FaGraduationCap,
-  FaMapMarkerAlt,
-  FaEnvelope,
-  FaPhoneAlt,
-  FaTwitter,
-  FaFacebookF,
-  FaLinkedinIn,
-  FaInstagram,
-  FaBaby,
-  FaSchool,
-  FaClock,
-  FaCheckCircle,
-  FaUser,
-  FaLock,
-  FaPaperPlane,
-  FaChild,
-  FaCreditCard,
+  FaGamepad, FaMusic, FaPalette, FaBus, FaAppleAlt, FaGraduationCap,
+  FaMapMarkerAlt, FaEnvelope, FaPhoneAlt, FaTwitter, FaFacebookF,
+  FaLinkedinIn, FaInstagram, FaBaby, FaSchool, FaClock, FaCheckCircle,
+  FaUser, FaLock, FaPaperPlane, FaChild, FaCreditCard,
 } from "react-icons/fa";
 import { collection, addDoc, query, where, getDocs } from "firebase/firestore";
 import nurseryImage1 from "./assets/img1.png";
@@ -34,7 +16,7 @@ import { db } from "./firebase";
 // Components
 import Administration from "./administation";
 import EducatorProfile from "./EducatorProfile";
-import ProfilePage from "./Profile";
+import ProfilePage from "./Profile"; 
 // --- Navbar Component ---
 
 const Navbar = ({ user, onLogout }) => {
@@ -49,42 +31,36 @@ const Navbar = ({ user, onLogout }) => {
 
   return (
     <nav className={`navBar ${scrolled ? "scrolled" : ""}`}>
-      <a href="#" className="logo">
-        Kid<span>Kinder</span>
-      </a>
+      <a href="#" className="logo">Kid<span>Kinder</span></a>
       <div className={`navLinks ${isActive ? "active" : ""}`}>
         <a href="#home">Home</a>
         <a href="#services">Services</a>
         <a href="#programs">Programs</a>
         {!user ? (
-          <a href="#register" className="nav-cta">
-            Enroll Now
-          </a>
+          <a href="#register" className="nav-cta">Enroll Now</a>
         ) : (
-          <button onClick={onLogout} className="nav-cta logout-nav">
-            Logout
-          </button>
+          <button onClick={onLogout} className="nav-cta logout-nav">Logout</button>
         )}
       </div>
       <div className="hamburger" onClick={() => setIsActive(!isActive)}>
-        <span></span>
-        <span></span>
-        <span></span>
+        <span></span><span></span><span></span>
       </div>
     </nav>
   );
 };
 
+
+
 // --- Header Component ---
 const Header = () => (
   <header className="nursery-header" id="home">
     <div className="header-content">
-      <span className="badge">Welcome to kidKinder</span>
+      <span className="badge">Welcome to Kinder</span>
       <h1>
         Where Tiny Steps Lead to <span className="highlight">Big Dreams</span>
       </h1>
       <p className="intro-text">
-        At <strong>kidKinder</strong>, we believe every child deserves a magical
+        At <strong>Kinder</strong>, we believe every child deserves a magical
         start. Our nursery provides a nurturing environment where safety meets
         fun.
       </p>
@@ -98,19 +74,19 @@ const Header = () => (
 // --- Services Component ---
 const Service = () => {
   const servicesData = [
-    { title: "Play Ground", icon: <FaGamepad />, color: "#FF7675", description:"A safe and fun outdoor space where children play, explore, and develop their physical skills through guided activities." },
-    { title: "Music & Dance", icon: <FaMusic />, color: "#74B9FF", description:"Fun music and movement sessions that help children express themselves, build confidence, and improve coordination." },
-    { title: "Arts & Crafts", icon: <FaPalette />, color: "#55E6C1",description:"Creative activities that encourage imagination, fine motor skills, and self-expression through drawing, painting, and crafting." },
-    { title: "Safe Transport", icon: <FaBus />, color: "#FAD390", description:"Reliable and secure transportation to ensure children travel safely between home and the nursery with trained staff supervision." },
-    { title: "Healthy Food", icon: <FaAppleAlt />, color: "#58B19F", description:"Nutritious, balanced meals prepared to support children’s growth, energy, and overall well-being." },
-    { title: "Education", icon: <FaGraduationCap />, color: "#A29BFE", description:"Age-appropriate learning programs that support early literacy, numeracy, and social development in a caring environment." },
+    { title: "Play Ground", icon: <FaGamepad />, color: "#FF7675" },
+    { title: "Music & Dance", icon: <FaMusic />, color: "#74B9FF" },
+    { title: "Arts & Crafts", icon: <FaPalette />, color: "#55E6C1" },
+    { title: "Safe Transport", icon: <FaBus />, color: "#FAD390" },
+    { title: "Healthy Food", icon: <FaAppleAlt />, color: "#58B19F" },
+    { title: "Education", icon: <FaGraduationCap />, color: "#A29BFE" },
   ];
 
   return (
     <section className="services-section" id="services">
       <div className="section-title">
         <h2>
-          What We <span>Offer?</span>
+          Why Choose <span>Us?</span>
         </h2>
       </div>
       <div className="services-container">
@@ -122,7 +98,8 @@ const Service = () => {
             <div className="service-info">
               <h3>{item.title}</h3>
               <p>
-                {item.description}
+                Holistic development through play-based learning and expert
+                care.
               </p>
             </div>
           </div>
@@ -278,12 +255,12 @@ const Teachers = () => {
       img: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400",
     },
     {
-      name: "Abderrahman Medad",
+      name: "Meddad abelrrehman",
       role: "Daycare",
       img: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400",
     },
     {
-      name: "Ilyas Djilali",
+      name: "Djilali ilyas",
       role: "After School",
       img: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400",
     },
@@ -293,7 +270,7 @@ const Teachers = () => {
     <section className="teachers-section" id="teachers">
       <div className="section-title">
         <h2>
-          Meet Our <span>Teachers</span>
+          Meet <span>Our Teachers</span>
         </h2>
       </div>
       <div className="teachers-grid">
@@ -333,97 +310,75 @@ const Register = ({ onRegisterSuccess }) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    // 1. ADMIN CHECK
-    if (
-      isLogin &&
-      formData.email === "admin@kinder.com" &&
-      formData.password === "admin123"
-    ) {
-      onRegisterSuccess({
-        email: "admin@kinder.com",
-        parentName: "Administrator",
-        isAdmin: true,
-      });
-      return;
-    }
+  // 1. ADMIN CHECK
+  if (isLogin && formData.email === "admin@kinder.com" && formData.password === "admin123") {
+    onRegisterSuccess({ email: "admin@kinder.com", parentName: "Administrator", isAdmin: true });
+    return;
+  }
 
-    try {
-      if (isLogin) {
-        // 2. CHECK EDUCATORS BY EMAIL
-        const eduQ = query(
-          collection(db, "educators"),
-          where("email", "==", formData.email)
-        );
-        const eduSnap = await getDocs(eduQ);
-
-        if (!eduSnap.empty) {
-          const eduData = eduSnap.docs[0].data();
-          if (eduData.password === formData.password) {
-            onRegisterSuccess({
-              ...eduData,
-              id: eduSnap.docs[0].id,
-              role: "educator",
-            });
-            return;
-          }
-        }
-
-        // 3. CHECK REGISTRATIONS (Parents)
-        const parentQ = query(
-          collection(db, "registrations"),
-          where("email", "==", formData.email)
-        );
-        const parentSnap = await getDocs(parentQ);
-
-        if (!parentSnap.empty) {
-          const parentData = parentSnap.docs[0].data();
-          if (parentData.password === formData.password) {
-            onRegisterSuccess({
-              ...parentData,
-              id: parentSnap.docs[0].id,
-              role: "parent",
-            });
-            return;
-          }
-        }
-        alert("Invalid Email or Password");
-      } else {
-        // --- FIXED REGISTRATION LOGIC ---
-        if (formData.password !== formData.confirmPassword) {
-          alert("Passwords do not match!");
+  try {
+    if (isLogin) {
+      // 2. CHECK EDUCATORS BY EMAIL
+      const eduQ = query(collection(db, "educators"), where("email", "==", formData.email));
+      const eduSnap = await getDocs(eduQ);
+      
+      if (!eduSnap.empty) {
+        const eduData = eduSnap.docs[0].data();
+        if (eduData.password === formData.password) {
+          onRegisterSuccess({ ...eduData, id: eduSnap.docs[0].id, role: "educator" }); 
           return;
         }
-
-        if (!formData.program) {
-          alert("Please select a program!");
-          return;
-        }
-
-        const newParent = {
-          parentName: formData.parentName,
-          childName: formData.childName,
-          email: formData.email,
-          program: formData.program,
-          password: formData.password,
-          role: "parent",
-          createdAt: new Date().toISOString(),
-        };
-
-        // Save to Firebase
-        const docRef = await addDoc(collection(db, "registrations"), newParent);
-
-        // Send to Profile Page immediately
-        onRegisterSuccess({ ...newParent, id: docRef.id });
-        alert("Registration Successful!");
       }
-    } catch (error) {
-      console.error("Firebase Error:", error);
-      alert("Error connecting to database.");
+
+      // 3. CHECK REGISTRATIONS (Parents)
+      const parentQ = query(collection(db, "registrations"), where("email", "==", formData.email));
+      const parentSnap = await getDocs(parentQ);
+
+      if (!parentSnap.empty) {
+        const parentData = parentSnap.docs[0].data();
+        if (parentData.password === formData.password) {
+          onRegisterSuccess({ ...parentData, id: parentSnap.docs[0].id, role: "parent" });
+          return;
+        }
+      }
+      alert("Invalid Email or Password");
+    } else {
+      // --- FIXED REGISTRATION LOGIC ---
+      if (formData.password !== formData.confirmPassword) {
+        alert("Passwords do not match!");
+        return;
+      }
+
+      if (!formData.program) {
+        alert("Please select a program!");
+        return;
+      }
+
+      const newParent = {
+        parentName: formData.parentName,
+        childName: formData.childName,
+        email: formData.email,
+        program: formData.program,
+        password: formData.password,
+        role: 'parent',
+        createdAt: new Date().toISOString()
+      };
+
+      // Save to Firebase
+      const docRef = await addDoc(collection(db, "registrations"), newParent);
+      
+      // Send to Profile Page immediately
+      onRegisterSuccess({ ...newParent, id: docRef.id });
+      alert("Registration Successful!");
     }
-  };
+  } catch (error) {
+    console.error("Firebase Error:", error);
+    alert("Error connecting to database.");
+  }
+};
 
   return (
     <section className="register-section" id="register">
@@ -433,7 +388,7 @@ const Register = ({ onRegisterSuccess }) => {
             {isLogin ? "Member Area" : "Enrollment 2025"}
           </span>
           <h2>
-            {isLogin ? "Access Your Account" : "Enroll Your Child"} 
+            {isLogin ? "Access Your" : "Enroll Your"} <span>Child</span>
           </h2>
           <p className="description">
             {isLogin
@@ -675,6 +630,7 @@ const Footer = () => (
   </footer>
 );
 
+
 // --- MAIN APP COMPONENT ---
 export default function App() {
   const [userProfile, setUserProfile] = useState(null);
@@ -726,5 +682,9 @@ export default function App() {
     );
   };
 
-  return <div className="App">{renderView()}</div>;
+  return (
+    <div className="App">
+      {renderView()}
+    </div>
+  );
 }
