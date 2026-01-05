@@ -18,16 +18,26 @@ const EducatorProfile = ({ user, onLogout }) => {
     fetchStudents();
   }, [user.program]);
 
-  const handleSend = async () => {
-    if(!msg) return;
-    const recipientName = target === "all" ? "All Parents" : students.find(s => s.id === target)?.parentName;
-    await addDoc(collection(db, "notices"), {
-      text: msg, program: user.program, sender: user.name,
-      recipient: recipientName, targetId: target, date: new Date().toISOString()
-    });
-    alert("Message Sent!");
-    setMsg("");
-  };
+// Inside EducatorProfile.js
+const handleSend = async () => {
+  if(!msg) return;
+  
+  const recipientName = target === "all" ? "All Parents" : students.find(s => s.id === target)?.parentName;
+  
+  await addDoc(collection(db, "notices"), {
+    text: msg, 
+    program: user.program, 
+    sender: user.name,
+    recipient: recipientName, 
+    targetId: target, 
+    // ADD THIS LINE:
+    recipientType: target === "all" ? "Broadcast" : "Private", 
+    date: new Date().toISOString()
+  });
+  
+  alert("Message Sent!");
+  setMsg("");
+};
 
   const saveAttendance = async () => {
     const promises = students.map(s => addDoc(collection(db, "attendance"), {

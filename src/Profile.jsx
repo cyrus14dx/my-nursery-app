@@ -18,29 +18,34 @@ const ProfilePage = ({ user }) => {
   const [notices, setNotices] = useState([]);
 
   // Fetch Notices from Firebase
-  useEffect(() => {
-    if (!user.id || !user.program) return;
+// Inside ProfilePage.js
+useEffect(() => {
+  if (!user.id || !user.program) return;
 
-    // Listen for notices matching the student's program
-    const q = query(
-      collection(db, "notices"),
-      where("program", "==", user.program),
-      orderBy("date", "desc")
-    );
+  const q = query(
+    collection(db, "notices"),
+    where("program", "==", user.program),
+    orderBy("date", "desc")
+  );
 
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const allNotices = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+  const unsubscribe = onSnapshot(q, (snapshot) => {
+    const allNotices = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+    
+    // UPDATED FILTER LOGIC:
+    const myFilteredNotices = allNotices.filter(n => {
+      // 1. Show if it's sent to "all" (Broadcast)
+      const isBroadcast = n.targetId === "all" || n.recipientType === "Broadcast";
+      // 2. Show if it's sent specifically to this user's ID
+      const isForMe = n.targetId === user.id;
       
-      // Filter logic: Show if it's a Broadcast OR if it's Private but intended for this specific parent/student
-      const myFilteredNotices = allNotices.filter(n => 
-        n.recipientType === "Broadcast" || n.targetId === user.id
-      );
-      
-      setNotices(myFilteredNotices);
+      return isBroadcast || isForMe;
     });
+    
+    setNotices(myFilteredNotices);
+  });
 
-    return () => unsubscribe();
-  }, [user.program, user.id]);
+  return () => unsubscribe();
+}, [user.program, user.id]);
 
   // Check Local Storage for Activation
   useEffect(() => {
