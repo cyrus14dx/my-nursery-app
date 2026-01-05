@@ -293,7 +293,7 @@ const Teachers = () => {
     <section className="teachers-section" id="teachers">
       <div className="section-title">
         <h2>
-          Meet <span>Our Teachers</span>
+          Meet Our <span>Teachers</span>
         </h2>
       </div>
       <div className="teachers-grid">
@@ -433,7 +433,7 @@ const Register = ({ onRegisterSuccess }) => {
             {isLogin ? "Member Area" : "Enrollment 2025"}
           </span>
           <h2>
-            {isLogin ? "Access Your" : "Enroll Your"} <span>Child</span>
+            {isLogin ? "Access Your Account" : "Enroll Your Child"} 
           </h2>
           <p className="description">
             {isLogin
