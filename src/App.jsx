@@ -278,12 +278,12 @@ const Teachers = () => {
       img: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400",
     },
     {
-      name: "Meddad abelrrehman",
+      name: "Abderrahman Medad",
       role: "Daycare",
       img: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400",
     },
     {
-      name: "Djilali ilyas",
+      name: "Ilyas Djilali",
       role: "After School",
       img: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400",
     },
