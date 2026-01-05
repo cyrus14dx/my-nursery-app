@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { FaBullhorn, FaClipboardList, FaUserTie, FaCheckCircle } from 'react-icons/fa';
-import { collection, query, where, getDocs, addDoc } from 'firebase/firestore';
+import { FaBullhorn, FaClipboardList, FaUserTie, FaCheckCircle, FaExclamationTriangle } from 'react-icons/fa';
+import { collection, query, where, getDocs, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from './firebase';
 
 const EducatorProfile = ({ user, onLogout }) => {
@@ -33,6 +33,46 @@ const EducatorProfile = ({ user, onLogout }) => {
     setAttendance(prev => ({ ...prev, [id]: !prev[id] }));
   };
 
+  const saveAttendance = async () => {
+    try {
+      // Save a record for each student for today
+      const attendancePromises = students.map(student => {
+        return addDoc(collection(db, "attendance"), {
+          childName: student.childName,
+          parentName: student.parentName,
+          program: user.program,
+          status: attendance[student.id] ? "Present" : "Absent",
+          date: new Date().toLocaleDateString(),
+          timestamp: serverTimestamp(),
+          reported: false
+        });
+      });
+      
+      await Promise.all(attendancePromises);
+      alert("Daily attendance submitted to Administration!");
+    } catch (err) {
+      alert("Error saving attendance");
+    }
+  };
+
+  // Function to report a specific issue with a student/parent
+  const reportToAdmin = async (student) => {
+    const reason = window.prompt(`Reason for reporting ${student.childName}'s parent:`);
+    if (reason) {
+      await addDoc(collection(db, "attendance"), {
+        childName: student.childName,
+        parentName: student.parentName,
+        program: user.program,
+        status: "Reported",
+        reportReason: reason,
+        date: new Date().toLocaleDateString(),
+        timestamp: serverTimestamp(),
+        reported: true
+      });
+      alert("Report sent to Administration.");
+    }
+  };
+
   return (
     <div className="educator-dashboard">
       <nav className="navBar scrolled">
@@ -52,26 +92,42 @@ const EducatorProfile = ({ user, onLogout }) => {
         </div>
 
         <div className="profile-main-grid">
-          {/* Attendance Section */}
           <div className="summary-card">
             <h3><FaClipboardList /> Daily Attendance</h3>
             <div className="attendance-list">
               {students.map(s => (
                 <div key={s.id} className="attendance-item">
-                  <span>{s.childName}</span>
-                  <button 
-                    className={`pill ${attendance[s.id] ? 'paid' : 'unpaid'}`}
-                    onClick={() => toggleAttendance(s.id)}
-                  >
-                    {attendance[s.id] ? 'Present' : 'Absent'}
-                  </button>
+                  <div style={{display: 'flex', flexDirection: 'column'}}>
+                    <span>{s.childName}</span>
+                    <small style={{fontSize: '0.7rem', color: '#888'}}>Parent: {s.parentName}</small>
+                  </div>
+                  <div style={{display: 'flex', gap: '10px'}}>
+                    <button 
+                      className={`pill ${attendance[s.id] ? 'paid' : 'unpaid'}`}
+                      onClick={() => toggleAttendance(s.id)}
+                    >
+                      {attendance[s.id] ? 'Present' : 'Absent'}
+                    </button>
+                    <button 
+                      style={{background: 'none', border: 'none', color: '#ff7675', cursor: 'pointer'}}
+                      onClick={() => reportToAdmin(s)}
+                      title="Report to Admin"
+                    >
+                      <FaExclamationTriangle />
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
-            <button className="activate-trigger-btn" style={{marginTop: '15px'}}>Save Attendance</button>
+            <button 
+              className="activate-trigger-btn" 
+              style={{marginTop: '15px'}}
+              onClick={saveAttendance}
+            >
+              Submit Daily Attendance
+            </button>
           </div>
 
-          {/* Notice Section */}
           <div className="notice-card educator-note">
             <div className="notice-header">
               <FaBullhorn className="notice-icon" />
