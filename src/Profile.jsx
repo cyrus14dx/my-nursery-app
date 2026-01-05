@@ -6,9 +6,9 @@ import {
   FaBullhorn,
   FaExclamationTriangle,
   FaPrint,
-  FaHistory
+  FaLock
 } from "react-icons/fa";
-import { collection, query, where, onSnapshot } from "firebase/firestore";
+import { collection, query, where, onSnapshot, orderBy } from "firebase/firestore";
 import { db } from "./firebase";
 
 const ProfilePage = ({ user }) => {
@@ -16,23 +16,33 @@ const ProfilePage = ({ user }) => {
   const [isActivated, setIsActivated] = useState(false);
   const [expiryDate, setExpiryDate] = useState(null);
   const [notices, setNotices] = useState([]);
-  
-  // Ref for the receipt content
-  const receiptRef = useRef();
 
+  // Fetch Notices from Firebase
   useEffect(() => {
     if (!user.id || !user.program) return;
-    const q = query(collection(db, "notices"), where("program", "==", user.program));
+
+    // Listen for notices matching the student's program
+    const q = query(
+      collection(db, "notices"),
+      where("program", "==", user.program),
+      orderBy("date", "desc")
+    );
+
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const allNotices = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-      const myFilteredNotices = allNotices
-        .filter(n => n.type === "broadcast" || n.recipientId === user.id)
-        .sort((a, b) => new Date(b.date) - new Date(a.date));
+      
+      // Filter logic: Show if it's a Broadcast OR if it's Private but intended for this specific parent/student
+      const myFilteredNotices = allNotices.filter(n => 
+        n.recipientType === "Broadcast" || n.targetId === user.id
+      );
+      
       setNotices(myFilteredNotices);
     });
+
     return () => unsubscribe();
   }, [user.program, user.id]);
 
+  // Check Local Storage for Activation
   useEffect(() => {
     const savedExpiry = localStorage.getItem(`expiry_${user.id}`);
     if (savedExpiry) {
@@ -54,7 +64,6 @@ const ProfilePage = ({ user }) => {
     setExpiryDate(nextMonth.toLocaleDateString());
     localStorage.setItem(`expiry_${user.id}`, expiryString);
     
-    // Store a simple payment record
     const paymentRecord = {
       date: new Date().toLocaleDateString(),
       amount: "$299.00",
@@ -63,10 +72,9 @@ const ProfilePage = ({ user }) => {
     localStorage.setItem(`last_payment_${user.id}`, JSON.stringify(paymentRecord));
 
     setShowPayment(false);
-    alert("Payment Successful!");
+    alert("Payment Successful! Profile Activated.");
   };
 
-  // --- NEW: Print Function ---
   const handlePrintReceipt = () => {
     const lastPay = JSON.parse(localStorage.getItem(`last_payment_${user.id}`));
     if (!lastPay) return alert("No recent payment found.");
@@ -74,19 +82,15 @@ const ProfilePage = ({ user }) => {
     const printWindow = window.open('', '_blank');
     printWindow.document.write(`
       <html>
-        <head><title>Payment Receipt</title></head>
-        <body style="font-family: sans-serif; padding: 40px; line-height: 1.6;">
-          <h2 style="color: #3498db;">Official Payment Receipt</h2>
+        <head><title>Receipt - ${user.childName}</title></head>
+        <body style="font-family: sans-serif; padding: 40px;">
+          <h2 style="color: #eb4d4b;">KinderCare Receipt</h2>
           <hr/>
-          <p><strong>Parent Name:</strong> ${user.parentName}</p>
-          <p><strong>Student Name:</strong> ${user.childName}</p>
-          <p><strong>Program:</strong> ${user.program.toUpperCase()}</p>
-          <p><strong>Transaction ID:</strong> ${lastPay.ref}</p>
-          <p><strong>Date:</strong> ${lastPay.date}</p>
-          <p><strong>Amount Paid:</strong> ${lastPay.amount}</p>
-          <p><strong>Status:</strong> Paid / Active</p>
-          <hr/>
-          <p style="font-size: 0.8rem;">Thank you for your enrollment. This is a computer-generated receipt.</p>
+          <p><strong>Parent:</strong> ${user.parentName}</p>
+          <p><strong>Student:</strong> ${user.childName}</p>
+          <p><strong>Transaction:</strong> ${lastPay.ref}</p>
+          <p><strong>Amount:</strong> ${lastPay.amount}</p>
+          <p><strong>Valid Until:</strong> ${expiryDate}</p>
         </body>
       </html>
     `);
@@ -98,192 +102,118 @@ const ProfilePage = ({ user }) => {
     <section className="profile-section">
       <div className="profile-container">
         
-        <div className="profile-header" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '30px' }}>
-          <div className="user-meta" style={{ display: 'flex', gap: '15px' }}>
-            <div className="user-avatar" style={{ fontSize: '2.5rem', color: '#3498db' }}><FaUser /></div>
+        {/* Header Section */}
+        <div className="profile-header">
+          <div className="user-meta">
+            <div className="user-avatar"><FaUser /></div>
             <div>
-              <h2 style={{ margin: 0 }}>Welcome, {user.parentName}</h2>
-              <p style={{ margin: 0, color: '#666' }}>ID: {user.id}</p>
+              <h2>Welcome, {user.parentName}</h2>
+              <p>Child: <strong>{user.childName}</strong> | Program: <strong>{user.program}</strong></p>
             </div>
           </div>
           <div className="status-container">
-             <span className={`status-badge ${isActivated ? 'activated' : 'pending'}`} style={{ padding: '8px 15px', borderRadius: '20px', fontWeight: 'bold', background: isActivated ? '#e8f8f0' : '#fef5e7', color: isActivated ? '#27ae60' : '#f39c12' }}>
-                {isActivated ? <><FaCheckCircle /> Active</> : "● Inactive"}
+             <span className={`status-badge ${isActivated ? 'activated' : 'pending'}`}>
+                {isActivated ? <><FaCheckCircle /> Account Active</> : "● Payment Pending"}
              </span>
           </div>
         </div>
 
-        <div className="profile-main-grid" style={{ display: 'grid', gridTemplateColumns: showPayment ? '1fr 1fr' : '1fr', gap: '20px' }}>
-          {/* Enrollment & Billing Card */}
-          <div className="summary-card" style={{ padding: '20px', border: '1px solid #eee', borderRadius: '12px', background: '#fff' }}>
-            <h3 style={{ borderBottom: '1px solid #eee', paddingBottom: '10px' }}>Enrollment & Billing</h3>
-            <p><strong>Program:</strong> {user.program?.toUpperCase()}</p>
+        {/* Billing and Activation Grid */}
+        <div className="profile-main-grid" style={{ gridTemplateColumns: showPayment ? '1fr 1fr' : '1fr' }}>
+          
+          <div className="summary-card">
+            <h3>Enrollment Summary</h3>
+            <div className="summary-item">
+              <span>Program Type</span>
+              <strong className="capitalize">{user.program}</strong>
+            </div>
+            <div className="summary-item">
+              <span>Monthly Fee</span>
+              <strong>$299.00</strong>
+            </div>
             
             {isActivated ? (
-              <div style={{ marginTop: '20px' }}>
-                <p style={{ color: '#27ae60' }}><strong>Access Valid Until:</strong> {expiryDate}</p>
-                <button 
-                  onClick={handlePrintReceipt}
-                  style={{ margin:'5px',display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 15px', background: '#f8f9fa', border: '1px solid #ddd', borderRadius: '5px', cursor: 'pointer', fontWeight: 'bold' }}
-                >
-                  <FaPrint /> Print Last Receipt
+              <div className="expiry-info fade-in">
+                <p style={{ color: '#27ae60', fontWeight: 'bold' }}>✓ Subscription active until {expiryDate}</p>
+                <button onClick={handlePrintReceipt} className="final-pay-btn" style={{background: '#636e72'}}>
+                  <FaPrint /> Print Receipt
                 </button>
               </div>
             ) : (
-              <button className="activate-trigger-btn" style={{ background: '#3498db', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: '5px', cursor: 'pointer' }} onClick={() => setShowPayment(true)}>
-                Pay $299.00 to Activate
+              <button className="activate-trigger-btn" onClick={() => setShowPayment(true)}>
+                Activate & Pay Now
               </button>
             )}
           </div>
 
-          {/* Payment Form */}
           {showPayment && (
-           <div className="payment-card-modern fade-in" style={{ 
-  padding: '35px', 
-  border: 'none', 
-  borderRadius: '24px', 
-  background: '#ffffff',
-  boxShadow: '0 20px 50px rgba(0,0,0,0.1)',
-  maxWidth: '450px',
-  margin: '0 auto'
-}}>
-  <div style={{ textAlign: 'center', marginBottom: '25px' }}>
-    <h3 style={{ margin: '0 0 10px 0', color: '#00394f', fontSize: '1.5rem' }}>Secure Checkout</h3>
-    <p style={{ margin: 0, fontSize: '0.9rem', color: '#666' }}>Transaction is encrypted and secure</p>
-  </div>
-
-  {/* Visual Card Preview */}
-  <div style={{
-    background: 'linear-gradient(135deg, #3498db 0%, #217dbb 100%)',
-    padding: '20px',
-    borderRadius: '15px',
-    color: 'white',
-    marginBottom: '30px',
-    boxShadow: '0 10px 20px rgba(52, 152, 219, 0.3)',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-    height: '160px'
-  }}>
-    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-      <FaCreditCard size={30} />
-      <span style={{ fontSize: '0.8rem', opacity: 0.8, fontWeight: 'bold' }}>CREDIT / DEBIT</span>
-    </div>
-    <div style={{ fontSize: '1.2rem', letterSpacing: '4px', textAlign: 'center' }}>
-      ••••  ••••  ••••  4242
-    </div>
-    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem' }}>
-      <div>
-        <span style={{ display: 'block', opacity: 0.7 }}>CARD HOLDER</span>
-        <span style={{ fontSize: '0.9rem', textTransform: 'uppercase' }}>{user.parentName}</span>
-      </div>
-      <div style={{ textAlign: 'right' }}>
-        <span style={{ display: 'block', opacity: 0.7 }}>EXPIRES</span>
-        <span style={{ fontSize: '0.9rem' }}>MM/YY</span>
-      </div>
-    </div>
-  </div>
-
-  <form className="modern-pay-form" onSubmit={handlePayment} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-    
-    {/* Card Number */}
-    <div className="pay-input-group">
-      <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.85rem', fontWeight: '600', color: '#444' }}>Card Number</label>
-      <div className="input-with-icon" style={{ position: 'relative' }}>
-        <FaCreditCard style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)', color: '#3498db' }} />
-        <input 
-          type="text" 
-          placeholder="4242 4242 4242 4242" 
-          required 
-          style={{ width: '100%', padding: '14px 14px 14px 45px', borderRadius: '12px', border: '2px solid #edf2f7', fontSize: '1rem', outline: 'none', transition: '0.3s' }} 
-        />
-      </div>
-    </div>
-
-    {/* Expiry and CVV Row */}
-    <div className="pay-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
-      <div>
-        <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.85rem', fontWeight: '600', color: '#444' }}>Expiry Date</label>
-        <input 
-          type="text" 
-          placeholder="MM / YY" 
-          required 
-          style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '2px solid #edf2f7', fontSize: '1rem', outline: 'none' }} 
-        />
-      </div>
-      <div>
-        <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.85rem', fontWeight: '600', color: '#444' }}>CVV</label>
-        <input 
-          type="text" 
-          placeholder="123" 
-          required 
-          style={{ width: '100%', padding: '14px', borderRadius: '12px', border: '2px solid #edf2f7', fontSize: '1rem', outline: 'none' }} 
-        />
-      </div>
-    </div>
-
-    <div style={{ marginTop: '10px' }}>
-      <button type="submit" className="final-pay-btn" style={{ 
-        width: '100%', 
-        padding: '16px', 
-        background: '#27ae60', 
-        color: '#fff', 
-        border: 'none', 
-        borderRadius: '14px', 
-        fontWeight: '700', 
-        fontSize: '1.1rem',
-        cursor: 'pointer',
-        boxShadow: '0 10px 20px rgba(39, 174, 96, 0.2)',
-        transition: '0.3s'
-      }}>
-        Pay $299.00 Now
-      </button>
-      
-      <button 
-        type="button" 
-        className="cancel-pay" 
-        onClick={() => setShowPayment(false)} 
-        style={{ 
-          width: '100%', 
-          marginTop: '15px', 
-          background: 'transparent', 
-          border: 'none', 
-          color: '#e74c3c', 
-          fontWeight: '600',
-          cursor: 'pointer',
-          fontSize: '0.9rem'
-        }}
-      >
-        Cancel Transaction
-      </button>
-    </div>
-  </form>
-</div>
+            <div className="payment-card-modern fade-in">
+              <h3 style={{textAlign: 'center', marginBottom: '20px'}}>Secure Payment</h3>
+              <form onSubmit={handlePayment}>
+                <div className="pay-input-group">
+                  <label>Card Number</label>
+                  <div className="input-with-icon">
+                    <FaCreditCard />
+                    <input type="text" placeholder="4242 4242 4242 4242" required />
+                  </div>
+                </div>
+                <div className="pay-row">
+                   <div className="pay-input-group">
+                     <label>Expiry</label>
+                     <input type="text" placeholder="MM/YY" required />
+                   </div>
+                   <div className="pay-input-group">
+                     <label>CVV</label>
+                     <input type="text" placeholder="123" required />
+                   </div>
+                </div>
+                <button type="submit" className="final-pay-btn">Confirm Payment</button>
+                <button type="button" className="cancel-pay" onClick={() => setShowPayment(false)}>Cancel</button>
+              </form>
+            </div>
           )}
         </div>
 
-        {/* Notices Section */}
-        <div className="notice-board-grid" style={{ marginTop: '30px' }}>
-          <div className="admin-card" style={{ padding: '20px', background: '#fff', borderRadius: '12px', border: '1px solid #eee' }}>
-            <h3><FaBullhorn /> Educator Updates</h3>
+        {/* NOTICES SECTION - Connected to Educator */}
+        <div className="notice-board-grid">
+          <div className="notice-card parent-note" style={{width: '100%'}}>
+            <div className="notice-header">
+              <FaBullhorn className="notice-icon" />
+              <h3>Messages from {user.program} Educators</h3>
+            </div>
+            
             <div className="notices-container" style={{ maxHeight: '400px', overflowY: 'auto' }}>
-              {isActivated ? (
+              {!isActivated ? (
+                <div style={{ textAlign: 'center', padding: '40px' }}>
+                  <FaLock size={40} style={{ color: '#ccc', marginBottom: '15px' }} />
+                  <p style={{ color: '#777' }}>Please activate your account to view messages and updates from your child's teacher.</p>
+                </div>
+              ) : notices.length > 0 ? (
                 notices.map((n) => (
-                  <div key={n.id} style={{ borderLeft: n.type === 'private' ? '5px solid #f1c40f' : '5px solid #3498db', padding: '15px', background: '#f9f9f9', borderRadius: '8px', marginBottom: '10px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: '#666' }}>
-                      <span><strong>Teacher {n.sender}</strong></span>
-                      <span>{new Date(n.date).toLocaleDateString()}</span>
+                  <div key={n.id} className="fade-in" style={{ 
+                    padding: '15px', 
+                    background: n.recipientType === 'Private' ? '#fff9db' : '#f1f2f6', 
+                    borderRadius: '12px', 
+                    marginBottom: '15px',
+                    borderLeft: n.recipientType === 'Private' ? '5px solid #f1c40f' : '5px solid #74B9FF'
+                  }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                      <span style={{fontWeight: 'bold', fontSize: '0.9rem'}}>Teacher {n.sender}</span>
+                      <span className="notice-date">{new Date(n.date).toLocaleDateString()}</span>
                     </div>
-                    <p>{n.text}</p>
-                    {n.type === 'private' && <span style={{ fontSize: '0.7rem', background: '#f1c40f', padding: '2px 6px', borderRadius: '4px' }}>PRIVATE</span>}
+                    <p style={{ margin: 0, fontSize: '0.95rem', color: '#2d3436' }}>{n.text}</p>
+                    {n.recipientType === 'Private' && (
+                      <span className="priority-tag" style={{background: '#f1c40f', color: '#000'}}>Private Message</span>
+                    )}
                   </div>
                 ))
               ) : (
-                <p style={{ textAlign: 'center', padding: '20px', color: '#999' }}><FaExclamationTriangle /> Please renew your subscription to see messages.</p>
+                <p style={{ textAlign: 'center', color: '#999', padding: '20px' }}>No updates at this time.</p>
               )}
             </div>
           </div>
         </div>
+
       </div>
     </section>
   );
