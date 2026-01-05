@@ -126,22 +126,55 @@ const ProfilePage = ({ user }) => {
           </div>
 
           {/* Payment UI */}
-          {showPayment && (
-            <div className="payment-card-modern fade-in">
-              <h3>Secure Checkout</h3>
-              <form className="modern-pay-form" onSubmit={handlePayment}>
-                <div className="pay-input-group">
-                  <label>Card Number</label>
-                  <div className="input-with-icon">
-                    <FaCreditCard />
-                    <input type="text" placeholder="xxxx xxxx xxxx xxxx" required />
-                  </div>
-                </div>
-                <button type="submit" className="final-pay-btn">Confirm Payment</button>
-                <button type="button" className="cancel-pay" onClick={() => setShowPayment(false)}>Cancel</button>
-              </form>
-            </div>
-          )}
+{showPayment && (
+  <div className="payment-overlay">
+    <div className="payment-card-modern fade-in">
+      <div className="payment-header">
+        <h3>Secure Checkout</h3>
+        <p>Complete your transaction securely</p>
+      </div>
+
+      <form className="modern-pay-form" onSubmit={handlePayment}>
+        <div className="pay-input-group">
+          <label>Cardholder Name</label>
+          <input type="text" placeholder="John Doe" required />
+        </div>
+
+        <div className="pay-input-group">
+          <label>Card Number</label>
+          <div className="input-with-icon">
+            <FaCreditCard />
+            <input type="text" placeholder="0000 0000 0000 0000" required />
+          </div>
+        </div>
+
+        <div className="pay-row">
+          <div className="pay-input-group">
+            <label>Expiry Date</label>
+            <input type="text" placeholder="MM/YY" required />
+          </div>
+          <div className="pay-input-group">
+            <label>CVC</label>
+            <input type="text" placeholder="123" required />
+          </div>
+        </div>
+
+        <button type="submit" className="final-pay-btn">
+          Confirm & Pay
+        </button>
+        
+        <button type="button" className="cancel-pay" onClick={() => setShowPayment(false)}>
+          Back to Summary
+        </button>
+      </form>
+      
+      <div className="trust-badges">
+        <span>🔒 SSL Encrypted</span>
+        <span>💳 Secured by Stripe</span>
+      </div>
+    </div>
+  </div>
+)}
         </div>
 
         {/* --- Communication Center --- */}

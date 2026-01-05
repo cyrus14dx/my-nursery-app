@@ -846,71 +846,108 @@ body {
 }
 
 /* Cards */
-.summary-card, .payment-card-modern {
-  background: white;
-  padding: 40px;
-  border-radius: 24px;
-  box-shadow: 0 15px 35px rgba(0,0,0,0,0.05);
-}
-
-.summary-item {
+/* Container and Overlay */
+.payment-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px); /* Modern frosted glass effect */
   display: flex;
-  justify-content: space-between;
-  padding: 15px 0;
-  border-bottom: 1px solid #eee;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
 }
 
-/* Buttons */
-.activate-trigger-btn {
+.payment-card-modern {
+  background: #ffffff;
+  padding: 40px;
+  border-radius: 28px;
   width: 100%;
-  margin-top: 30px;
-  padding: 15px;
-  background: #FF7675;
-  color: white;
-  border: none;
-  border-radius: 12px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: 0.3s;
+  max-width: 420px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
 }
 
-.activate-trigger-btn:hover { background: #ff5e5d; transform: translateY(-3px); }
-
-.final-pay-btn {
-  width: 100%;
-  padding: 15px;
-  background: #55E6C1;
-  color: #1a473a;
-  border: none;
-  border-radius: 12px;
-  font-weight: 700;
-  margin-top: 20px;
-  cursor: pointer;
+.payment-header {
+  text-align: center;
+  margin-bottom: 30px;
 }
 
-/* Form Styles */
-.pay-input-group { margin-bottom: 15px; }
-.pay-input-group label { display: block; margin-bottom: 5px; font-size: 0.85rem; color: #666; }
+.payment-header h3 { margin: 0; font-size: 1.5rem; color: #1a1a1a; }
+.payment-header p { color: #71717a; font-size: 0.9rem; margin-top: 5px; }
+
+/* Form Elements */
+.pay-input-group { margin-bottom: 20px; }
+.pay-input-group label { 
+  display: block; 
+  margin-bottom: 8px; 
+  font-size: 0.85rem; 
+  font-weight: 600; 
+  color: #4a4a4a; 
+}
+
 .pay-input-group input {
   width: 100%;
-  padding: 12px;
-  border: 2px solid #f0f0f0;
-  border-radius: 10px;
+  padding: 14px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.pay-input-group input:focus {
+  background: #fff;
+  border-color: #6366f1; /* Professional Indigo */
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
   outline: none;
 }
 
-.input-with-icon { position: relative; }
-.input-with-icon svg { position: absolute; left: 12px; top: 15px; color: #aaa; }
-.input-with-icon input { padding-left: 40px; }
+/* Row for Expiry/CVC */
+.pay-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 
-.pay-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+/* Buttons */
+.final-pay-btn {
+  width: 100%;
+  padding: 16px;
+  background: #18181b; /* Darker is often seen as more professional */
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: transform 0.2s, background 0.2s;
+}
 
-.fade-in { animation: fadeIn 0.5s ease; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.final-pay-btn:hover {
+  background: #000;
+  transform: translateY(-1px);
+}
 
 .cancel-pay {
-  background: none; border: none; color: #888; width: 100%; margin-top: 10px; cursor: pointer;
-} 
+  display: block;
+  width: 100%;
+  margin-top: 15px;
+  background: none;
+  border: none;
+  color: #71717a;
+  font-size: 0.9rem;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* Trust Signals */
+.trust-badges {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 25px;
+  padding-top: 20px;
+  border-top: 1px solid #f4f4f5;
+  font-size: 0.75rem;
+  color: #a1a1aa;
+}
+
 .notice-board-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
