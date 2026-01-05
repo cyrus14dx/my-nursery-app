@@ -79,12 +79,12 @@ const Navbar = ({ user, onLogout }) => {
 const Header = () => (
   <header className="nursery-header" id="home">
     <div className="header-content">
-      <span className="badge">Welcome to Kinder</span>
+      <span className="badge">Welcome to kidKinder</span>
       <h1>
         Where Tiny Steps Lead to <span className="highlight">Big Dreams</span>
       </h1>
       <p className="intro-text">
-        At <strong>Kinder</strong>, we believe every child deserves a magical
+        At <strong>kidKinder</strong>, we believe every child deserves a magical
         start. Our nursery provides a nurturing environment where safety meets
         fun.
       </p>
@@ -110,7 +110,7 @@ const Service = () => {
     <section className="services-section" id="services">
       <div className="section-title">
         <h2>
-          Why Choose <span>Us?</span>
+          What We <span>Offer?</span>
         </h2>
       </div>
       <div className="services-container">
