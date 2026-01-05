@@ -108,7 +108,7 @@ const Service = () => {
   );
 };
 
-// --- Programs Component ---
+// --- Programs Component ----
 const Programs = () => {
   const plans = [
     {
