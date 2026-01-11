@@ -127,7 +127,7 @@ const Programs = () => {
     {
       title: "Preschool Academy",
       icon: <FaSchool />,
-      price: "550",
+      price: "2500",
       age: "3 - 5 Years",
       color: "#17a2b8",
       features: [
@@ -140,7 +140,7 @@ const Programs = () => {
     {
       title: "After School",
       icon: <FaClock />,
-      price: "300",
+      price: "1000",
       age: "6 - 12 Years",
       color: "#f0932b",
       features: [
@@ -173,7 +173,7 @@ const Programs = () => {
             </div>
             <div className="program-body">
               <div className="program-price">
-                <span className="currency">$</span>
+                <span className="currency">DZD</span>
                 <span className="amount">{plan.price}</span>
                 <span className="month">/Month</span>
               </div>
