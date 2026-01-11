@@ -11,7 +11,12 @@ import nurseryImage1 from "./assets/img1.png";
 import nurseryImage2 from "./assets/girl.jpg";
 import nurseryImage3 from "./assets/boy-holding-green-container.jpg";
 import "./App.css";
-import { db } from "./firebase";
+import { db } from "./firebase"; 
+import youcef from "./assets/5555.jpg"; 
+import abdo from "./assets/abdo1.jpg"; 
+import ilyas from "./assets/ilyas1.jpg"; 
+import amine from "./assets/aaa.jpg"; 
+
 
 // Components
 import Administration from "./administation";
@@ -246,22 +251,22 @@ const Teachers = () => {
     {
       name: "Larbi Youcef",
       role: "Daycare",
-      img: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400",
+      img: youcef,
     },
     {
       name: "Amine Kerada",
       role: "Preschool",
-      img: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400",
+      img: amine,
     },
     {
       name: "Meddad Abderrahmane",
       role: "Daycare",
-      img: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400",
+      img:  abdo,
     },
     {
       name: "Ilyas Djilali",
       role: "After School",
-      img: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400",
+      img: ilyas,
     },
   ];
 
