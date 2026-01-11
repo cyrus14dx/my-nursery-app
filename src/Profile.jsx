@@ -119,7 +119,7 @@ const ProfilePage = ({ user }) => {
               <div className="renewal-notice">
                 <p>Access expired. Please renew to view teacher messages.</p>
                 <button className="activate-trigger-btn" onClick={() => setShowPayment(true)}>
-                  Renew Subscription ($299.00)
+                  Renew Subscription (DZD 450.00)
                 </button>
               </div>
             )}
