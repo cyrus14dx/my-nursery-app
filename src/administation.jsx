@@ -140,7 +140,7 @@ const Administration = ({ onLogout }) => {
             </div>
             <div className="stat-card">
               <FaMoneyBillWave className="stat-icon gold" />
-              <div><h3>${calculateTotalRevenue()}</h3><p>Monthly Revenue</p></div>
+              <div><h3>DZD{calculateTotalRevenue()}</h3><p>Monthly Revenue</p></div>
             </div>
           </div>
         )}
